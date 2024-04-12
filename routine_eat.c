@@ -6,7 +6,7 @@
 /*   By: matorgue <warthog2603@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 08:54:17 by matorgue          #+#    #+#             */
-/*   Updated: 2024/04/12 22:10:29 by matorgue         ###   ########.fr       */
+/*   Updated: 2024/04/12 23:09:05 by matorgue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,17 +90,30 @@ void	ft_usleep(uint64_t sleep)
 	start = get_time();
 	while ((get_time() - start) < sleep)
 	{
-		usleep(sleep / 10);
+		usleep(sleep / 100);
 	}
 }
 
 void	lock_fork(t_philo *philo)
 {
-	pthread_mutex_lock(philo->fork_left);
-	timestamp(philo->data, 0, philo->philo_number);
-	pthread_mutex_lock(philo->fork_right);
-	timestamp(philo->data, 0, philo->philo_number);
-	philo->eat = true;
-	timestamp(philo->data, 1, philo->philo_number);
-	philo->last_eat = get_time() - philo->data->start;
+	if (philo->philo_number % 2 == 0)
+	{
+		pthread_mutex_lock(philo->fork_left);
+		timestamp(philo->data, 0, philo->philo_number);
+		pthread_mutex_lock(philo->fork_right);
+		timestamp(philo->data, 0, philo->philo_number);
+		philo->eat = true;
+		timestamp(philo->data, 1, philo->philo_number);
+		philo->last_eat = get_time() - philo->data->start;
+	}
+	else
+	{
+		pthread_mutex_lock(philo->fork_right);
+		timestamp(philo->data, 0, philo->philo_number);
+		pthread_mutex_lock(philo->fork_left);
+		timestamp(philo->data, 0, philo->philo_number);
+		philo->eat = true;
+		timestamp(philo->data, 1, philo->philo_number);
+		philo->last_eat = get_time() - philo->data->start;
+	}
 }

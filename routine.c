@@ -6,7 +6,7 @@
 /*   By: matorgue <warthog2603@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 19:00:00 by matorgue          #+#    #+#             */
-/*   Updated: 2024/04/12 22:14:36 by matorgue         ###   ########.fr       */
+/*   Updated: 2024/04/12 23:08:42 by matorgue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,24 @@
 
 void	unlock_fork(t_philo *philo)
 {
-	pthread_mutex_unlock(philo->fork_right);
-	pthread_mutex_unlock(philo->fork_left);
-	pthread_mutex_lock(&philo->data->mutex_for_eat);
-	philo->eat = false;
-	pthread_mutex_unlock(&philo->data->mutex_for_eat);
-	philo->for_sleep = true;
+	if (philo->philo_number % 2 == 0)
+	{
+		pthread_mutex_unlock(philo->fork_right);
+		pthread_mutex_unlock(philo->fork_left);
+		pthread_mutex_lock(&philo->data->mutex_for_eat);
+		philo->eat = false;
+		pthread_mutex_unlock(&philo->data->mutex_for_eat);
+		philo->for_sleep = true;
+	}
+	else
+	{
+		pthread_mutex_unlock(philo->fork_left);
+		pthread_mutex_unlock(philo->fork_right);
+		pthread_mutex_lock(&philo->data->mutex_for_eat);
+		philo->eat = false;
+		pthread_mutex_unlock(&philo->data->mutex_for_eat);
+		philo->for_sleep = true;
+	}
 }
 
 void	ft_sleep(t_philo *philo, int *i)
@@ -81,6 +93,7 @@ void	*routine(void *argv)
 			return (NULL);
 		}
 		pthread_mutex_unlock(&philo->data->mutex_for_look_died);
+		usleep(1);
 	}
 	philo->last_eat = get_time();
 	return (NULL);
